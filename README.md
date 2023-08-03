@@ -83,6 +83,18 @@ GOOGLE_TAKING_VALUE_FROM="Name"
 
 All additional environment variables can be found in the [config.go](./cmd/config/config.go) file.
 
+Some interesting environment variables:
+
+```dotenv
+# Success message that will represent the result of the search.
+#
+# Example: "Your deadline is %s"
+SLACK_CUSTOM_SUCCESS_MSG=""
+```
+
+If any errors happen in the columns, search of data content - they will be represented to the final user.
+Errors like, verification of the request, parsing of the request, etc. will not be represented to the final user.
+
 ### Example:
 
 Here is an example with getting the deadline date for user with email.

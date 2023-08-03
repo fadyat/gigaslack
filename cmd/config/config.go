@@ -19,6 +19,13 @@ type Slack struct {
 	// Can be found on the Basic Information page:
 	// https://api.slack.com/apps/<your-app-id>/general
 	SigningSecret string `yaml:"slack.signingSecret" env:"SLACK_SIGNING_SECRET" env-required:"true"`
+
+	// Custom is the custom configuration for the bot.
+	Custom struct {
+
+		// SuccessMsg is the message that the bot will send to the user if the data is found.
+		SuccessMsg string `yaml:"slack.custom.successMsg" env:"SLACK_CUSTOM_SUCCESS_MSG" env-default:"Here is your data:"`
+	}
 }
 
 type Google struct {
