@@ -1,0 +1,29 @@
+version: "3.7"
+
+services:
+
+  api:
+    container_name: gigaslack
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - VERSION="dev-compose"
+    environment:
+      SLACK_SIGNING_SECRET: ""
+      SLACK_BOT_TOKEN: ""
+      GOOGLE_CREDENTIALS_STRING: ""
+      GOOGLE_SPREADSHEET_ID: ""
+      GOOGLE_SPREADSHEET_RANGE: ""
+      GOOGLE_SEARCHING_VALUE_FROM: "Email"
+      GOOGLE_TAKING_VALUE_FROM: "Comments"
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+
+  api_registry:
+    container_name: gigaslack_registry
+    image: ghcr.io/fadyat/gigaslack:latest
+    ports:
+      - "8081:8080"

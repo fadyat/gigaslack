@@ -1,0 +1,53 @@
+on:
+  push:
+    paths:
+      - 'cmd/**'
+      - 'internal/**'
+      - 'Dockerfile'
+      - 'go.mod'
+      - 'go.sum'
+      - '.github/workflows/publish.yaml'
+    tags:
+      - v*
+
+env:
+  IMAGE_NAME: 'gigaslack'
+  GO_VERSION: '1.20'
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: setup golang
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: format version
+        run: |
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          echo VERSION=$VERSION >> $GITHUB_ENV
+      - name: build
+        run: |
+          docker build \
+            -f ./Dockerfile \
+            -t $IMAGE_NAME \
+            --build-arg VERSION=${{ env.VERSION }} \
+            --label RUN_NUMBER=$GITHUB_RUN_ID .
+      - name: login
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: push
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[:upper:]' '[:lower:]')
+          echo IMAGE_ID=$IMAGE_ID VERSION=${{ env.VERSION }}
+          docker tag $IMAGE_NAME $IMAGE_ID:${{ env.VERSION }}
+          docker push $IMAGE_ID:${{ env.VERSION }}
+          docker tag $IMAGE_NAME $IMAGE_ID:latest
+          docker push $IMAGE_ID:latest
