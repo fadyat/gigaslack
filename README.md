@@ -6,9 +6,21 @@ This is a Slack bot that can search and take values from a Google spreadsheet.
 
 1. Create a new Slack app.
 2. Add a bot user to the app.
+   > Scopes for slack bot:
+   > - `chat:write`
+   > - `chat:write.customize`
+   > - `commands`
+   > - `users:profile:read`
+   > - `channels:history`
+
 3. Install the app to your workspace.
 4. Register slash commands to the app.
 5. Create a new Google service account.
+   > Enable Google Sheets API for the service account.
+   >
+   > Setup roles for the service account:
+   > - `Viewer` for the spreadsheet.
+
 6. Share the Google spreadsheet with the service account.
 7. Download the service account credentials file.
 
