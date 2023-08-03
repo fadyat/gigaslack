@@ -37,7 +37,6 @@ func main() {
 		Handler:      slackHandler,
 	}
 
-	fmt.Println(cfg)
 	zap.L().Info("starting server", zap.String("version", Version), zap.String("addr", server.Addr))
 	if e := server.ListenAndServe(); e != nil && !errors.Is(e, http.ErrServerClosed) {
 		log.Fatal("failed to start server: ", e)
