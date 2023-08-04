@@ -116,7 +116,7 @@ func (ss *SlackHandler) slashCommandHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	w.WriteHeader(http.StatusOK)
-	ss.writer.WriteWithLogs(w, fmt.Sprintf("Hello, %s!\n\n%s\n", ss.cfg.Custom.SuccessMsg, user.Email), ss.lg)
+	ss.writer.WriteWithLogs(w, fmt.Sprintf("Hello, %s!\n\n%s\n", user.Email, ss.cfg.Custom.SuccessMsg), ss.lg)
 	ss.writer.WriteWithLogs(w, fmt.Sprintf("%s\n", spreadsheetData), ss.lg)
 	ss.lg.Info("successfully processed slash command", zap.String("user", user.Email))
 }

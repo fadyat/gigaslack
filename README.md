@@ -100,7 +100,7 @@ Some interesting environment variables:
 ```dotenv
 # Success message that will represent the result of the search.
 #
-# Example: "Your deadline is %s"
+# Example: "Your deadline is:"
 SLACK_CUSTOM_SUCCESS_MSG=""
 ```
 
