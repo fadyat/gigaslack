@@ -18,24 +18,19 @@ var (
 )
 
 type GoogleSpreadsheets struct {
-	cfg *config.Google
+	cfg   *config.Google
+	creds *google.Credentials
 }
 
-func NewGoogleSpreadsheets(cfg *config.Google) *GoogleSpreadsheets {
+func NewGoogleSpreadsheets(cfg *config.Google, creds *google.Credentials) *GoogleSpreadsheets {
 	return &GoogleSpreadsheets{
-		cfg: cfg,
+		cfg:   cfg,
+		creds: creds,
 	}
 }
 
 func (gs *GoogleSpreadsheets) fetchGoogleSheetData() (*sheets.ValueRange, error) {
-	creds, err := google.CredentialsFromJSON(
-		context.Background(), gs.cfg.Credentials, sheets.SpreadsheetsReadonlyScope,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	srv, err := sheets.NewService(context.Background(), option.WithCredentials(creds))
+	srv, err := sheets.NewService(context.Background(), option.WithCredentials(gs.creds))
 	if err != nil {
 		return nil, err
 	}

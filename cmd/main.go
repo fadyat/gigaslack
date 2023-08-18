@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"go.uber.org/zap"
+	"golang.org/x/oauth2/google"
+	"google.golang.org/api/sheets/v4"
 	"googlesheets-slackbot-golang/cmd/config"
 	"googlesheets-slackbot-golang/internal"
 	"googlesheets-slackbot-golang/internal/service"
@@ -15,19 +18,31 @@ var (
 	Version = "dev"
 )
 
-func main() {
-	cfg, err := config.NewConfig()
-	if err != nil {
-		log.Fatal("failed to load config: ", err)
-	}
-
+func initLogger() {
 	logger, err := zap.NewProduction()
 	if err != nil {
 		log.Fatal("failed to create logger: ", err)
 	}
 
 	zap.ReplaceGlobals(logger)
-	googleSpreadsheets := service.NewGoogleSpreadsheets(&cfg.Google)
+}
+
+func main() {
+	initLogger()
+
+	cfg, err := config.NewConfig()
+	if err != nil {
+		log.Fatal("failed to load config: ", err)
+	}
+
+	creds, err := google.CredentialsFromJSON(
+		context.Background(), cfg.Google.Credentials, sheets.SpreadsheetsReadonlyScope,
+	)
+	if err != nil {
+		log.Fatal("failed to get credentials from json: ", err)
+	}
+
+	googleSpreadsheets := service.NewGoogleSpreadsheets(&cfg.Google, creds)
 	slackHandler := internal.NewSlackHandler(&cfg.Slack, googleSpreadsheets, zap.L())
 
 	server := &http.Server{
