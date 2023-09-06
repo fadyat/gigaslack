@@ -15,6 +15,13 @@ This is a Slack bot that can search and take values from a Google spreadsheet.
 
 3. Install the app to your workspace.
 4. Register slash commands to the app.
+
+   > As a `Request URL` for command can be set any endpoint of deployed gigaslack app.
+   >
+   > Example:
+   > - deployed to https://gigaslack.com
+   > - setting to https://gigaslack.com or https://gigaslack.com/aboba/322 will be valid.
+
 5. Create a new Google service account.
    > Enable Google Sheets API for the service account.
    >
