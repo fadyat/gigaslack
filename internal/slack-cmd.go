@@ -42,7 +42,15 @@ func (ss *SlackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ss.verifyMiddleware(ss.slashCommandHandler)(w, r)
+	ss.loggerMiddleware(ss.verifyMiddleware(ss.slashCommandHandler))(w, r)
+}
+
+func (ss *SlackHandler) loggerMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ss.lg.Info("request received", zap.String("method", r.Method), zap.String("path", r.URL.Path))
+		ss.lg.Info("request headers", zap.Any("headers", r.Header))
+		next(w, r)
+	}
 }
 
 func (ss *SlackHandler) verifyMiddleware(next http.HandlerFunc) http.HandlerFunc {
