@@ -42,7 +42,11 @@ func main() {
 		log.Fatal("failed to get credentials from json: ", err)
 	}
 
-	googleSpreadsheets := service.NewGoogleSpreadsheets(&cfg.Google, creds)
+	googleSpreadsheets, err := service.NewGoogleSpreadsheets(&cfg.Google, creds)
+	if err != nil {
+		log.Fatal("failed to create google spreadsheets service: ", err)
+	}
+
 	slackHandler := internal.NewSlackHandler(&cfg.Slack, googleSpreadsheets, zap.L())
 
 	server := &http.Server{

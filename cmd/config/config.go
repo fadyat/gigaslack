@@ -1,8 +1,10 @@
 package config
 
 import (
+	"fmt"
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/joho/godotenv"
+	"strings"
 	"time"
 )
 
@@ -23,9 +25,41 @@ type Slack struct {
 	// Custom is the custom configuration for the bot.
 	Custom struct {
 
+		// IncludeGreeting is the flag to include greeting message.
+		// Example: "Hello, <user>!"
+		IncludeGreeting bool `yaml:"slack.custom.includeGreeting" env:"SLACK_CUSTOM_INCLUDE_GREETING" env-default:"true"`
+
 		// SuccessMsg is the message that the bot will send to the user if the data is found.
-		SuccessMsg string `yaml:"slack.custom.successMsg" env:"SLACK_CUSTOM_SUCCESS_MSG" env-default:"Here is your data:"`
+		// Used between greeting message and the data.
+		SuccessMsgHeader string `yaml:"slack.custom.successMsgHeader" env:"SLACK_CUSTOM_SUCCESS_MSG,SLACK_CUSTOM_SUCCESS_MSG_HEADER" env-default:""`
+
+		// SuccessMsgFooter is the message that the bot will send to the user if the data is found.
+		// Used after the data.
+		SuccessMsgFooter string `yaml:"slack.custom.successMsgFooter" env:"SLACK_CUSTOM_SUCCESS_MSG_FOOTER" env-default:""`
 	}
+}
+
+func BuildSuccessMsg(sc *Slack, user string, value any) string {
+	var sb strings.Builder
+
+	if sc.Custom.IncludeGreeting {
+		sb.WriteString(fmt.Sprintf("Hello, %s!\n", user))
+	}
+
+	var (
+		headerMsg           = sc.Custom.SuccessMsgHeader
+		headerHaveSeparator = strings.HasSuffix(headerMsg, " ") || strings.HasSuffix(headerMsg, "\n") || headerMsg == ""
+	)
+	if !headerHaveSeparator {
+		headerMsg += " "
+	}
+
+	sb.WriteString(fmt.Sprintf("%s%s\n", headerMsg, value))
+	if sc.Custom.SuccessMsgFooter != "" {
+		sb.WriteString(fmt.Sprintf("%s\n", sc.Custom.SuccessMsgFooter))
+	}
+
+	return sb.String()
 }
 
 type Google struct {

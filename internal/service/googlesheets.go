@@ -20,27 +20,20 @@ var (
 type GoogleSpreadsheets struct {
 	cfg   *config.Google
 	creds *google.Credentials
+	svc   *sheets.Service
 }
 
-func NewGoogleSpreadsheets(cfg *config.Google, creds *google.Credentials) *GoogleSpreadsheets {
+func NewGoogleSpreadsheets(cfg *config.Google, creds *google.Credentials) (*GoogleSpreadsheets, error) {
+	sheetsService, err := sheets.NewService(context.Background(), option.WithCredentials(creds))
+	if err != nil {
+		return nil, err
+	}
+
 	return &GoogleSpreadsheets{
 		cfg:   cfg,
 		creds: creds,
-	}
-}
-
-func (gs *GoogleSpreadsheets) fetchGoogleSheetData() (*sheets.ValueRange, error) {
-	srv, err := sheets.NewService(context.Background(), option.WithCredentials(gs.creds))
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := srv.Spreadsheets.Values.Get(gs.cfg.SpreadsheetID, gs.cfg.SpreadsheetRange).Do()
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
+		svc:   sheetsService,
+	}, nil
 }
 
 func (gs *GoogleSpreadsheets) getTableHeaders(tableData [][]any) []any {
@@ -62,7 +55,7 @@ func getColumnIndex(tableHeaders []any, columnName string) int {
 }
 
 func (gs *GoogleSpreadsheets) TakeByValue(value string) (any, error) {
-	spreadsheetData, err := gs.fetchGoogleSheetData()
+	spreadsheetData, err := gs.svc.Spreadsheets.Values.Get(gs.cfg.SpreadsheetID, gs.cfg.SpreadsheetRange).Do()
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch Google Sheet data: %v", err)
 	}

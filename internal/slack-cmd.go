@@ -3,7 +3,6 @@ package internal
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"github.com/slack-go/slack"
 	"go.uber.org/zap"
 	"googlesheets-slackbot-golang/cmd/config"
@@ -124,7 +123,7 @@ func (ss *SlackHandler) slashCommandHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	w.WriteHeader(http.StatusOK)
-	ss.writer.WriteWithLogs(w, fmt.Sprintf("Hello, %s!\n\n%s\n", user.Email, ss.cfg.Custom.SuccessMsg), ss.lg)
-	ss.writer.WriteWithLogs(w, fmt.Sprintf("%s\n", spreadsheetData), ss.lg)
+	responseMsg := config.BuildSuccessMsg(ss.cfg, user.Email, spreadsheetData)
+	ss.writer.WriteWithLogs(w, responseMsg, ss.lg)
 	ss.lg.Info("successfully processed slash command", zap.String("user", user.Email))
 }

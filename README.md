@@ -105,10 +105,35 @@ All additional environment variables can be found in the [config.go](./cmd/confi
 Some interesting environment variables:
 
 ```dotenv
-# Success message that will represent the result of the search.
+# Response message consists of 4 parts:
+# <Greeting> <Header> <Content> <Footer>
+# Content is fetched from the Google spreadsheet.
+#
+# By using these variables, you can customize the response message.
+# You can use newlines (\n) and spaces to make the message more readable.
+#
+# By default, if SLACK_CUSTOM_SUCCESS_MSG_HEADER is not ended with \n or space,
+# space will be added automatically.
+
+# Include greeting message to the response message.
+# By default, it is set to true.
+SLACK_CUSTOM_INCLUDE_GREETING=true
+
+# Deprecated: use SLACK_CUSTOM_SUCCESS_MSG_HEADER instead.
+# Backward compatibility is kept.
+SLACK_CUSTOM_SUCCESS_MSG=""
+
+# Header success message
+# By default, is empty.
 #
 # Example: "Your deadline is:"
-SLACK_CUSTOM_SUCCESS_MSG=""
+SLACK_CUSTOM_SUCCESS_MSG_HEADER="Your deadline is:"
+
+# Footer success message
+# By default, is empty.
+#
+# Example: "Well done! :clap: :clap: :clap:"
+SLACK_CUSTOM_SUCCESS_MSG_FOOTER="Well done! :clap: :clap: :clap:"
 ```
 
 If any errors happen in the columns, search of data content - they will be represented to the final user.
