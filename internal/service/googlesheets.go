@@ -8,6 +8,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/sheets/v4"
 	"googlesheets-slackbot-golang/cmd/config"
+	"strings"
 )
 
 var (
@@ -54,7 +55,7 @@ func getColumnIndex(tableHeaders []any, columnName string) int {
 	return -1
 }
 
-func (gs *GoogleSpreadsheets) TakeByValue(value string) (any, error) {
+func (gs *GoogleSpreadsheets) TakeByValue(value string, caseSensitive bool) (any, error) {
 	spreadsheetData, err := gs.svc.Spreadsheets.Values.Get(gs.cfg.SpreadsheetID, gs.cfg.SpreadsheetRange).Do()
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch Google Sheet data: %v", err)
@@ -75,11 +76,33 @@ func (gs *GoogleSpreadsheets) TakeByValue(value string) (any, error) {
 		return nil, ErrTakeColumnNotFound
 	}
 
-	for _, row := range spreadsheetData.Values {
-		if len(row) > searchHeaderIndex && row[searchHeaderIndex] == value && len(row) > takeHeaderIndex {
+	return takeByValue(spreadsheetData.Values, searchHeaderIndex, takeHeaderIndex, value, caseSensitive)
+}
+
+func takeByValue(
+	values [][]any, searchHeaderIndex, takeHeaderIndex int, value string, caseSensitive bool,
+) (any, error) {
+	for _, row := range values {
+		if !rowHaveBothColumns(row, searchHeaderIndex, takeHeaderIndex) {
+			continue
+		}
+
+		if areTheSame(fmt.Sprintf("%v", row[searchHeaderIndex]), value, caseSensitive) {
 			return row[takeHeaderIndex], nil
 		}
 	}
 
 	return nil, ErrValueNotFound
+}
+
+func rowHaveBothColumns(row []any, searchHeaderIndex, takeHeaderIndex int) bool {
+	return len(row) > searchHeaderIndex && len(row) > takeHeaderIndex
+}
+
+func areTheSame(have, want string, caseSensitive bool) bool {
+	if caseSensitive {
+		return have == want
+	}
+
+	return strings.EqualFold(have, want)
 }

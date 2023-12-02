@@ -36,6 +36,10 @@ type Slack struct {
 		// SuccessMsgFooter is the message that the bot will send to the user if the data is found.
 		// Used after the data.
 		SuccessMsgFooter string `yaml:"slack.custom.successMsgFooter" env:"SLACK_CUSTOM_SUCCESS_MSG_FOOTER" env-default:""`
+
+		// CaseSensitive is the flag to consider the searching value as case-sensitive.
+		// Example: with disabled case-sensitive, "Hello" and "hello" will be considered as the same value.
+		CaseSensitive bool `yaml:"slack.custom.caseSensitive" env:"SLACK_CUSTOM_CASE_SENSITIVE" env-default:"false"`
 	}
 }
 

@@ -102,7 +102,7 @@ func (ss *SlackHandler) slashCommandHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	spreadsheetData, err := ss.googleSpreadsheets.TakeByValue(user.Email)
+	spreadsheetData, err := ss.googleSpreadsheets.TakeByValue(user.Email, ss.cfg.Custom.CaseSensitive)
 
 	switch {
 	case err == nil:

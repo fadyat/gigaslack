@@ -134,6 +134,12 @@ SLACK_CUSTOM_SUCCESS_MSG_HEADER="Your deadline is:"
 #
 # Example: "Well done! :clap: :clap: :clap:"
 SLACK_CUSTOM_SUCCESS_MSG_FOOTER="Well done! :clap: :clap: :clap:"
+
+# Case sensivity of the searching value.
+# By default, is false.
+#
+# Example: "Hello" and "hello" will be treated as the same value.
+SLACK_CUSTOM_CASE_SENSITIVE=false
 ```
 
 If any errors happen in the columns, search of data content - they will be represented to the final user.
